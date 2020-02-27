@@ -1,7 +1,10 @@
 import React from 'react'
 import axios from 'axios'
+import { withRouter } from 'react-router-dom'
 // Components
 import Nav from './Nav'
+import Gallery from './Gallery'
+import Review from './Review'
 // CSS
 import '../styles/cards.css'
 import '../styles/grid.css'
@@ -50,18 +53,12 @@ class House extends React.Component {
 				console.log({ err })
 			})
 	}
+
 	render() {
 		return (
 			<>
 				<Nav />
-				<div className="gallery">
-					<div className="image-main"></div>
-					<div className="previews">
-						{this.state.house.images.map((image, i) => (
-							<div className="preview" key={i}></div>
-						))}
-					</div>
-				</div>
+				<Gallery house={this.state.house} images={this.state.house.images} />
 				<div className="grid medium">
 					<div className="grid sidebar-right">
 						<div className="content">
@@ -73,7 +70,12 @@ class House extends React.Component {
 								</span>
 							</small>
 							<div className="user">
-								<div className="avatar"></div>
+								<div
+									className="avatar"
+									style={{
+										backgroundImage: `url(${this.state.house.host.avatar})`
+									}}
+								></div>
 								<div className="name">
 									<small>Hosted by</small>
 									<span>{this.state.house.host.name}</span>
@@ -122,26 +124,7 @@ class House extends React.Component {
 									{`${this.state.reviews.length} `}
 									Reviews
 								</h2>
-								{this.state.reviews.map((review, i) => {
-									return (
-										<div className="card review" key={i}>
-											<div className="content">
-												<div className="user">
-													<div className="avatar"></div>
-													<div className="name">
-														<span>{review.author.name}</span>
-														<small>{review.author.location}</small>
-													</div>
-												</div>
-												<div className="rating">
-													<i className="fas fa-star"></i>
-													<i className="far fa-star"></i>
-												</div>
-												<p>{review.content}</p>
-											</div>
-										</div>
-									)
-								})}
+								<Review reviews={this.state.reviews} />
 							</div>
 						</div>
 						<div className="sidebar">
@@ -152,15 +135,21 @@ class House extends React.Component {
 										<small>per night</small>
 									</h3>
 									<small>
-										<i className="fas fa-star"></i>
-										<i className="far fa-star"></i>
+										{[...Array(this.state.house.rating)].map((e, i) => {
+											return <i className="fas fa-star" key={i}></i>
+										})}
+										{[...Array(5 - this.state.house.rating)].map((e, i) => {
+											return <i className="far fa-star" key={i}></i>
+										})}
 										<span>{this.state.reviews.length} Reviews</span>
 									</small>
 									<form className="small">
 										<div className="group">
 											<label>Guests</label>
 											<select>
-												<option>1 guests</option>
+												{[...Array(this.state.house.guests)].map((e, i) => {
+													return <option key={i}>{1 + i} guests</option>
+												})}
 											</select>
 										</div>
 										<div className="group">
@@ -179,4 +168,4 @@ class House extends React.Component {
 	}
 }
 
-export default House
+export default withRouter(House)

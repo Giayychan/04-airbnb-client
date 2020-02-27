@@ -1,4 +1,6 @@
 .gallery {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
 	border-bottom: 1px solid #e2e2e2;
 }
 
@@ -32,7 +34,11 @@
 }
 
 .gallery .previews {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
 	padding: 50px;
+	grid-column-gap: 30px;
+	grid-row-gap: 30px;
 }
 
 .gallery .preview {

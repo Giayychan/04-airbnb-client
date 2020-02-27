@@ -1,5 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import '../styles/nav.css'
 
 class Nav extends React.Component {
@@ -7,11 +8,11 @@ class Nav extends React.Component {
 		return (
 			<>
 				<nav>
-					<a href="/" className="logo"></a>
+					<Link to="/" className="logo"></Link>
 					<div className="profile">
-						<a href="/plus" className="button">
+						<Link to="/plus" className="button">
 							<span>Airbnb Plus</span>
-						</a>
+						</Link>
 					</div>
 				</nav>
 			</>

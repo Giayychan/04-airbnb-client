@@ -23,7 +23,8 @@ class Houses extends React.Component {
 				lng: 115.137
 			},
 			zoom: 14
-		}
+		},
+		selectedHouse: {}
 	}
 	componentWillMount() {
 		axios
@@ -85,11 +86,13 @@ class Houses extends React.Component {
 	}
 
 	houseHover = id => {
+		let selectedHouseId = id
 		let houses = this.state.originalHouses
 		houses.map(e => {
 			return e._id === id ? (e.selected = true) : (e.selected = false)
 		})
 		this.setState({ houses: houses })
+		this.setState({ selectedHouse: selectedHouseId })
 	}
 
 	render() {
@@ -134,11 +137,13 @@ class Houses extends React.Component {
 					/>
 				</div>
 				<div className="grid map">
-					<Thumbnails
-						house={this.state.houses}
-						key={this.state.houses._id}
-						houseHover={this.houseHover}
-					/>
+					<Link to={`/houses/${this.state.selectedHouse}`}>
+						<Thumbnails
+							house={this.state.houses}
+							key={this.state.houses._id}
+							houseHover={this.houseHover}
+						/>
+					</Link>
 					<div className="map">
 						<GoogleMap
 							bootstrapURLKeys={this.state.map.key}
