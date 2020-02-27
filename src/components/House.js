@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 // Components
-
+import Nav from './Nav'
 // CSS
 import '../styles/cards.css'
 import '../styles/grid.css'
@@ -26,18 +26,34 @@ class House extends React.Component {
 		},
 		reviews: []
 	}
-	componentWillMount() {}
+	componentWillMount() {
+		axios
+			.get(`${process.env.REACT_APP_API}/houses/${this.props.match.params.id}`)
+			.then(res => {
+				this.setState({
+					house: res.data
+				})
+			})
+			.catch(err => {
+				console.log({ err })
+			})
+		axios
+			.get(
+				`${process.env.REACT_APP_API}/reviews/?house=${this.props.match.params.id}`
+			)
+			.then(res => {
+				this.setState({
+					reviews: res.data
+				})
+			})
+			.catch(err => {
+				console.log({ err })
+			})
+	}
 	render() {
 		return (
 			<>
-				<nav>
-					<a href="/" className="logo"></a>
-					<div className="profile">
-						<a href="/plus" className="button">
-							<span>Airbnb Plus</span>
-						</a>
-					</div>
-				</nav>
+				<Nav />
 				<div className="gallery">
 					<div className="image-main"></div>
 					<div className="previews">
