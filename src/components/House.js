@@ -42,7 +42,7 @@ class House extends React.Component {
 			})
 		axios
 			.get(
-				`${process.env.REACT_APP_API}/reviews/?house=${this.props.match.params.id}`
+				`${process.env.REACT_APP_API}/reviews?house=${this.props.match.params.id}`
 			)
 			.then(res => {
 				this.setState({
