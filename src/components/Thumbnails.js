@@ -14,7 +14,12 @@ class Thumbnails extends React.Component {
 								key={house._id}
 								onMouseEnter={e => {
 									return this.props.houseHover
-										? this.props.houseHover(house._id)
+										? this.props.houseHover(house._id, true)
+										: null
+								}}
+								onMouseLeave={e => {
+									return this.props.houseHover
+										? this.props.houseHover(house._id, false)
 										: null
 								}}
 							>

@@ -26,6 +26,16 @@ class Pin extends React.Component {
 				className={this.state.house.selected ? 'pin selected' : 'pin'}
 				lat={this.state.lat}
 				lng={this.state.lng}
+				onMouseEnter={e => {
+					return this.props.houseHover
+						? this.props.houseHover(this.state.house._id, true)
+						: null
+				}}
+				onMouseLeave={e => {
+					return this.props.houseHover
+						? this.props.houseHover(this.state.house._id, false)
+						: null
+				}}
 			>
 				<label>${this.state.house.price}</label>
 			</div>

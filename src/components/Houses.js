@@ -24,7 +24,7 @@ class Houses extends React.Component {
 			},
 			zoom: 14
 		},
-		selectedHouse: {}
+		selectedHouse: ''
 	}
 	componentWillMount() {
 		axios
@@ -49,6 +49,25 @@ class Houses extends React.Component {
 				console.log({ err })
 			})
 	}
+	houseHover = (id, boolean) => {
+		let selectedHouseId = id
+		let houses = this.state.originalHouses
+		if (boolean) {
+			houses.map(e => {
+				console.log(e._id)
+				console.log(e._id === id)
+				return e._id === id ? (e.selected = true) : (e.selected = false)
+			})
+		} else {
+			houses.map(e => {
+				e.selected = false
+				return e
+			})
+		}
+		// this.setState({ houses })
+		this.setState({ selectedHouse: selectedHouseId })
+	}
+
 	search = e => {
 		let houses = this.state.originalHouses.filter(house => {
 			return (
@@ -80,19 +99,26 @@ class Houses extends React.Component {
 
 	filterMaxPrice = num => {
 		let houses = this.state.originalHouses.filter(house => {
-			return house.price >= num.target.value
+			return house.price <= num.target.value
 		})
 		this.setState({ houses: houses })
 	}
 
-	houseHover = id => {
-		let selectedHouseId = id
+	sortBy = e => {
 		let houses = this.state.originalHouses
-		houses.map(e => {
-			return e._id === id ? (e.selected = true) : (e.selected = false)
-		})
-		this.setState({ houses: houses })
-		this.setState({ selectedHouse: selectedHouseId })
+		if (e.target.value === 'rating') {
+			houses.sort((a, b) => {
+				return b.rating - a.rating
+			})
+			this.setState({ houses: houses })
+		} else if (e.target.value === 'price') {
+			houses.sort((a, b) => {
+				return a.price - b.price
+			})
+			this.setState({ houses: houses })
+		} else {
+			this.setState({ houses: houses })
+		}
 	}
 
 	render() {
@@ -125,7 +151,7 @@ class Houses extends React.Component {
 						placeholder="max price"
 						onChange={this.filterMaxPrice}
 					/>
-					<select>
+					<select onChange={this.sortBy}>
 						<option value="price">Lowest Price</option>
 						<option value="rating">Highest Rating</option>
 					</select>
@@ -151,7 +177,13 @@ class Houses extends React.Component {
 							zoom={this.state.map.zoom}
 						>
 							{this.state.houses.map((house, i) => (
-								<Pin house={house} lat={house.lat} lng={house.lng} key={i} />
+								<Pin
+									house={house}
+									lat={house.lat}
+									lng={house.lng}
+									key={i}
+									houseHover={this.houseHover}
+								/>
 							))}
 						</GoogleMap>
 					</div>
