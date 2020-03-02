@@ -24,7 +24,8 @@ class Houses extends React.Component {
 			},
 			zoom: 14
 		},
-		selectedHouse: ''
+		selectedHouse: '',
+		filter: {}
 	}
 	componentWillMount() {
 		axios
@@ -54,8 +55,6 @@ class Houses extends React.Component {
 		let houses = this.state.originalHouses
 		if (boolean) {
 			houses.map(e => {
-				console.log(e._id)
-				console.log(e._id === id)
 				return e._id === id ? (e.selected = true) : (e.selected = false)
 			})
 		} else {
@@ -68,57 +67,50 @@ class Houses extends React.Component {
 		this.setState({ selectedHouse: selectedHouseId })
 	}
 
-	search = e => {
-		let houses = this.state.originalHouses.filter(house => {
-			return (
-				house.title.toLowerCase().includes(e.target.value.toLowerCase()) ||
-				house.city.toLowerCase().includes(e.target.value.toLowerCase()) ||
-				house.region.toLowerCase().includes(e.target.value.toLowerCase())
-			)
-		})
-		this.setState({ houses: houses })
-	}
-
-	filter = e => {
-		let houses = this.state.originalHouses.filter(house => {
-			return house.type._id === e.target.value
-		})
-		if (e.target.value === 'All Types') {
-			this.setState({ houses: this.state.originalHouses })
-		} else {
-			this.setState({ houses: houses })
-		}
-	}
-
-	filterBedroomsFunc = e => {
-		let houses = this.state.originalHouses.filter(house => {
-			return house.bedrooms >= e.target.value
-		})
-		this.setState({ houses: houses })
-	}
-
-	filterMaxPrice = num => {
-		let houses = this.state.originalHouses.filter(house => {
-			return house.price <= num.target.value
-		})
-		this.setState({ houses: houses })
-	}
-
-	sortBy = e => {
+	allfilter = (e, typeOfFilter) => {
+		let filter = this.state.filter
+		filter[typeOfFilter] = e.target.value
+		this.setState({ filter })
 		let houses = this.state.originalHouses
-		if (e.target.value === 'rating') {
+		if (this.state.filter.type && this.state.filter.type !== 'All Types') {
+			houses = houses.filter(house => house.type._id === this.state.filter.type)
+		}
+		if (this.state.filter.price) {
+			houses = houses.filter(house => house.price <= this.state.filter.price)
+		}
+		if (this.state.filter.search) {
+			houses = houses.filter(house => {
+				return (
+					house.title
+						.toLowerCase()
+						.includes(this.state.filter.search.toLowerCase()) ||
+					house.city
+						.toLowerCase()
+						.includes(this.state.filter.search.toLowerCase()) ||
+					house.region
+						.toLowerCase()
+						.includes(this.state.filter.search.toLowerCase())
+				)
+			})
+		}
+		if (this.state.filter.minBedroom) {
+			houses = houses.filter(house => {
+				return house.bedrooms >= e.target.value
+			})
+		}
+		if (this.state.filter.sortBy === 'rating') {
 			houses.sort((a, b) => {
 				return b.rating - a.rating
 			})
-			this.setState({ houses: houses })
-		} else if (e.target.value === 'price') {
+		}
+
+		if (this.state.filter.sortBy === 'price') {
 			houses.sort((a, b) => {
 				return a.price - b.price
 			})
-			this.setState({ houses: houses })
-		} else {
-			this.setState({ houses: houses })
 		}
+
+		this.setState({ houses })
 	}
 
 	render() {
@@ -126,7 +118,7 @@ class Houses extends React.Component {
 			<>
 				<Nav />
 				<div className="filters">
-					<select onChange={this.filterBedroomsFunc}>
+					<select onChange={e => this.allfilter(e, 'minBedroom')}>
 						{[...Array(6)].map((e, i) => {
 							let x = (i += 1)
 							return (
@@ -136,7 +128,7 @@ class Houses extends React.Component {
 							)
 						})}
 					</select>
-					<select onChange={this.filter}>
+					<select onChange={e => this.allfilter(e, 'type')}>
 						<option value="All Types">All Types</option>
 						{this.state.types.map(type => {
 							return (
@@ -149,9 +141,9 @@ class Houses extends React.Component {
 					<input
 						type="number"
 						placeholder="max price"
-						onChange={this.filterMaxPrice}
+						onChange={e => this.allfilter(e, 'price')}
 					/>
-					<select onChange={this.sortBy}>
+					<select onChange={e => this.allfilter(e, 'sortBy')}>
 						<option value="price">Lowest Price</option>
 						<option value="rating">Highest Rating</option>
 					</select>
@@ -159,7 +151,7 @@ class Houses extends React.Component {
 						type="text"
 						className="search"
 						placeholder="Search..."
-						onChange={this.search}
+						onChange={e => this.allfilter(e, 'search')}
 					/>
 				</div>
 				<div className="grid map">
